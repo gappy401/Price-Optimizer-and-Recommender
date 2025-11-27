@@ -1,12 +1,7 @@
 {
   "all_features": [
-    "price",
-    "competitor_price",
     "price_diff_competitor",
-    "price_ratio_competitor",
-    "price_pct_vs_competitor",
-    "is_premium_vs_competitor",
-    "price_vs_product_norm",
+    "price_tier",
     "month",
     "quarter",
     "day_of_week",
@@ -15,7 +10,7 @@
     "is_summer_slowdown",
     "is_year_end",
     "is_quarter_end",
-    "is_weekend",
+    "season",
     "competitor_promotion",
     "days_since_promotion",
     "competitive_intensity",
@@ -24,8 +19,6 @@
     "high_inventory_flag",
     "price_inventory_pressure",
     "overpriced_overstocked",
-    "competitor_promo_high_season",
-    "premium_in_low_season",
     "price_ma_7d",
     "price_ma_30d",
     "price_momentum",
@@ -37,13 +30,8 @@
     "season_encoded"
   ],
   "price_features": [
-    "price",
-    "competitor_price",
     "price_diff_competitor",
-    "price_ratio_competitor",
-    "price_pct_vs_competitor",
-    "is_premium_vs_competitor",
-    "price_vs_product_norm"
+    "price_tier"
   ],
   "temporal_features": [
     "month",
@@ -54,7 +42,7 @@
     "is_summer_slowdown",
     "is_year_end",
     "is_quarter_end",
-    "is_weekend"
+    "season"
   ],
   "competitive_features": [
     "competitor_promotion",
@@ -68,9 +56,7 @@
   ],
   "interaction_features": [
     "price_inventory_pressure",
-    "overpriced_overstocked",
-    "competitor_promo_high_season",
-    "premium_in_low_season"
+    "overpriced_overstocked"
   ],
   "historical_features": [
     "price_ma_7d",
