@@ -13,7 +13,6 @@
     "season",
     "competitor_promotion",
     "days_since_promotion",
-    "competitive_intensity",
     "inventory_level",
     "inventory_pct",
     "high_inventory_flag",
@@ -46,8 +45,7 @@
   ],
   "competitive_features": [
     "competitor_promotion",
-    "days_since_promotion",
-    "competitive_intensity"
+    "days_since_promotion"
   ],
   "inventory_features": [
     "inventory_level",
