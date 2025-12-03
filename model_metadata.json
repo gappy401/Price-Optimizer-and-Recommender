@@ -1,35 +1,6 @@
 {
   "model_type": "Gradient Boosting",
   "features": [
-    "price_diff_competitor",
-    "price_tier",
-    "month",
-    "quarter",
-    "day_of_week",
-    "week_of_year",
-    "is_academic_start",
-    "is_summer_slowdown",
-    "is_year_end",
-    "is_quarter_end",
-    "season",
-    "competitor_promotion",
-    "days_since_promotion",
-    "inventory_level",
-    "inventory_pct",
-    "high_inventory_flag",
-    "price_inventory_pressure",
-    "overpriced_overstocked",
-    "price_ma_7d",
-    "price_ma_30d",
-    "price_momentum",
-    "qty_ma_7d",
-    "qty_ma_30d",
-    "demand_trend",
-    "product_encoded",
-    "segment_encoded",
-    "season_encoded"
-  ],
-  "features_expanded": [
     "num__price_diff_competitor",
     "num__month",
     "num__quarter",
@@ -63,7 +34,7 @@
     "cat__season_Summer",
     "cat__season_Winter"
   ],
-  "features_rf": [
+  "features_expanded": [
     "num__price_diff_competitor",
     "num__month",
     "num__quarter",

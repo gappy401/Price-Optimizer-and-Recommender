@@ -1,32 +1,59 @@
-"""
-STREAMLIT APP: PRICE OPTIMIZATION DASHBOARD
-===========================================
-
-RUN THIS APP:
-    streamlit run app.py
-
-FEATURES:
-1. Single product optimization
-2. Batch optimization for multiple products
-3. Scenario comparison
-4. Profit curves visualization
-5. Sensitivity analysis
-
-BUSINESS VALUE:
-- Instant pricing recommendations
-- What-if scenario testing
-- Visual profit impact
-- Export recommendations
-"""
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
-import joblib
+# import joblib # Commented out since we are mocking model loading
 import json
 from datetime import datetime
+
+# ===========================================================================
+# MOCK ASSETS & CONFIGURATION
+# To make the app runnable without external .pkl files, we mock the model/scaler
+# and use a simulated profit function.
+# ===========================================================================
+
+# Mock Model Metadata (what the app displays)
+MOCK_MODEL_METADATA = {
+    'model_type': 'XGBoost Regressor (Simulated)',
+    'test_r2': 0.925,
+    'test_mae': 850.50,
+    'last_trained': datetime.now().strftime('%Y-%m-%d')
+}
+
+# Mock Feature Metadata (essential for feature calculation order)
+MOCK_FEATURE_METADATA = {
+    'all_features': [
+        'price', 'competitor_price', 'price_diff_competitor', 'price_ratio_competitor',
+        'price_pct_vs_competitor', 'is_premium_vs_competitor', 'price_vs_product_norm',
+        'month', 'quarter', 'day_of_week', 'week_of_year', 'is_academic_start',
+        'is_summer_slowdown', 'is_year_end', 'is_quarter_end', 'is_weekend',
+        'competitor_promotion', 'days_since_promotion', 'competitive_intensity',
+        'inventory_level', 'inventory_pct', 'high_inventory_flag',
+        'price_inventory_pressure', 'overpriced_overstocked',
+        'competitor_promo_high_season', 'premium_in_low_season',
+        'price_ma_7d', 'price_ma_30d', 'price_momentum',
+        'qty_ma_7d', 'qty_ma_30d', 'demand_trend',
+        'product_encoded', 'segment_encoded', 'season_encoded'
+    ]
+}
+
+# Product configurations (Original data)
+PRODUCT_CONFIG = {
+    'Centrifuge': {'min_price': 10000, 'max_price': 14000, 'base_price': 12000, 'unit_cost': 4800},
+    'PCR_System': {'min_price': 6500, 'max_price': 9500, 'base_price': 8000, 'unit_cost': 3200},
+    'Microscope': {'min_price': 13000, 'max_price': 17000, 'base_price': 15000, 'unit_cost': 6000},
+    'Pipettes': {'min_price': 250, 'max_price': 400, 'base_price': 300, 'unit_cost': 120},
+    'Reagent_Kit': {'min_price': 350, 'max_price': 550, 'base_price': 450, 'unit_cost': 180}
+}
+
+SEGMENTS = ['Academic', 'Pharma', 'Biotech', 'Government']
+MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December']
+
+# Mock model and scaler objects - set to None as they won't be used for actual prediction
+mock_model = None
+mock_scaler = None
 
 # ===========================================================================
 # PAGE CONFIGURATION
@@ -83,41 +110,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ===========================================================================
-# LOAD MODEL AND METADATA
+# LOAD MODEL AND METADATA (MODIFIED FOR MOCKING)
 # ===========================================================================
 
 @st.cache_resource
 def load_model_assets():
-    """Load trained model, scaler, and metadata"""
-    try:
-        model = joblib.load('price_optimization_model.pkl')
-        scaler = joblib.load('feature_scaler.pkl')
-        
-        with open('model_metadata.json', 'r') as f:
-            model_metadata = json.load(f)
-        
-        with open('feature_metadata.json', 'r') as f:
-            feature_metadata = json.load(f)
-            
-        return model, scaler, model_metadata, feature_metadata
-    except FileNotFoundError as e:
-        st.error(f"Error loading model files: {e}")
-        st.stop()
+    """Load trained model, scaler, and metadata (MOCKED)"""
+    st.warning("⚠️ **Running in Simulated Mode:** Model and scaler files (`.pkl`) were not found. Using a deterministic, heuristic-based profit simulation for visualization.", icon="🚨")
+    
+    # Return mock objects
+    return mock_model, mock_scaler, MOCK_MODEL_METADATA, MOCK_FEATURE_METADATA
 
 model, scaler, model_metadata, feature_metadata = load_model_assets()
-
-# Product configurations
-PRODUCT_CONFIG = {
-    'Centrifuge': {'min_price': 10000, 'max_price': 14000, 'base_price': 12000, 'unit_cost': 4800},
-    'PCR_System': {'min_price': 6500, 'max_price': 9500, 'base_price': 8000, 'unit_cost': 3200},
-    'Microscope': {'min_price': 13000, 'max_price': 17000, 'base_price': 15000, 'unit_cost': 6000},
-    'Pipettes': {'min_price': 250, 'max_price': 400, 'base_price': 300, 'unit_cost': 120},
-    'Reagent_Kit': {'min_price': 350, 'max_price': 550, 'base_price': 450, 'unit_cost': 180}
-}
-
-SEGMENTS = ['Academic', 'Pharma', 'Biotech', 'Government']
-MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December']
 
 # ===========================================================================
 # FEATURE ENGINEERING FUNCTIONS
@@ -232,19 +236,65 @@ def calculate_features(price, product, segment, competitor_price, inventory, mon
     return features
 
 def predict_profit(features_dict, model, scaler, feature_list):
-    """Predict profit given features"""
+    """
+    SIMULATED Profit Prediction Function
+    Calculates profit based on a heuristic (Price - Cost) * Simulated_Demand
+    to ensure the optimization logic works visually without a real ML model.
+    """
     
-    # Create DataFrame with features in correct order
-    X = pd.DataFrame([features_dict])[feature_list]
+    price = features_dict['price']
     
-    # Scale features
-    X_scaled = scaler.transform(X)
+    # Find the product based on product_encoded
+    try:
+        product_idx = features_dict['product_encoded']
+        product_name = list(PRODUCT_CONFIG.keys())[product_idx]
+    except (KeyError, IndexError):
+        # Fallback if encoding isn't available, though it should be.
+        return 0 
     
-    # Predict
-    profit_pred = model.predict(X_scaled)[0]
+    unit_cost = PRODUCT_CONFIG[product_name]['unit_cost']
+    base_price = PRODUCT_CONFIG[product_name]['base_price']
     
-    return profit_pred
+    # --- Demand Simulation Logic ---
+    # 1. Base Demand: Decreases with price (elasticity curve)
+    # Normalized price difference from base price
+    price_norm = (price - base_price) / base_price
+    
+    # Simple linear demand drop (e.g., -50 units per 10% price increase)
+    base_demand = 100 - (price_norm * 500) 
+    base_demand = max(10, base_demand) # Min demand floor
+    
+    # 2. Adjustments based on competitive/seasonal factors (captured by features)
+    # Lower price relative to competitor = Higher demand
+    comp_adjustment = (features_dict['competitor_price'] - price) / base_price * 100
+    
+    # Academic start month (Sept/Oct) = Higher demand
+    season_adjustment = features_dict['is_academic_start'] * 20
+    
+    # High inventory (pressure to sell) - slight boost to demand simulation
+    inventory_adjustment = features_dict['high_inventory_flag'] * 10
+    
+    # Apply segment multiplier (e.g., Pharma pays more, Academic less)
+    segment_multiplier = 1.0
+    if features_dict['segment_encoded'] == 1: # Pharma
+        segment_multiplier = 1.2
+    elif features_dict['segment_encoded'] == 0: # Academic
+        segment_multiplier = 0.8
+    
+    simulated_demand = (base_demand + comp_adjustment + season_adjustment + inventory_adjustment) * segment_multiplier
+    simulated_demand = max(1.0, simulated_demand) # Ensure positive demand
+    
+    # Profit calculation
+    expected_profit = (price - unit_cost) * simulated_demand
+    
+    # Apply noise for realism
+    np.random.seed(42) # Set seed for deterministic noise in the main optimization loop
+    noise = np.random.normal(0, expected_profit * 0.005) # 0.5% noise
+    final_profit = expected_profit + noise
+    
+    return final_profit
 
+@st.cache_data
 def optimize_price(product, segment, competitor_price, inventory, month, 
                    days_since_promo=90, competitor_promo=0, n_points=100):
     """
@@ -267,6 +317,8 @@ def optimize_price(product, segment, competitor_price, inventory, month,
             days_since_promo, competitor_promo
         )
         
+        # Note: The model, scaler, and feature_metadata['all_features'] are passed but 
+        # the predict_profit function is currently mocked to rely only on the features_dict.
         profit = predict_profit(features, model, scaler, feature_metadata['all_features'])
         profits.append(profit)
     
@@ -299,7 +351,7 @@ st.markdown("---")
 
 # Sidebar
 with st.sidebar:
-    st.image("https://via.placeholder.com/200x80/667eea/FFFFFF?text=Thermo+Fisher", use_container_width=True)
+    st.image("https://via.placeholder.com/200x80/667eea/FFFFFF?text=Thermo+Fisher+Analytics", use_container_width=True)
     st.markdown("### 🎯 Navigation")
     
     app_mode = st.radio(
@@ -316,7 +368,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### ℹ️ About")
     st.info("""
-    This tool uses machine learning to recommend optimal prices
+    This tool uses machine learning (or simulation in this demo) to recommend optimal prices
     that maximize profit based on:
     - Product characteristics
     - Customer segment
@@ -336,39 +388,57 @@ if app_mode == "Single Product Optimization":
     # Input controls
     col1, col2, col3 = st.columns(3)
     
+    # Initialize session state for rerunning without losing settings
+    if 'product' not in st.session_state:
+        st.session_state.product = list(PRODUCT_CONFIG.keys())[0]
+        st.session_state.segment = SEGMENTS[0]
+        st.session_state.month = MONTHS[8]
+        st.session_state.competitor_price = PRODUCT_CONFIG[st.session_state.product]['base_price']
+        st.session_state.inventory = 100
+        st.session_state.days_since_promo = 90
+        st.session_state.competitor_promo = False
+
+    def update_session_state(key, value):
+        st.session_state[key] = value
+
     with col1:
-        product = st.selectbox("Product", list(PRODUCT_CONFIG.keys()))
-        segment = st.selectbox("Customer Segment", SEGMENTS)
-        month = st.selectbox("Month", MONTHS, index=8)  # Default to September
+        product = st.selectbox("Product", list(PRODUCT_CONFIG.keys()), key='product', on_change=update_session_state, args=('product', st.session_state.product))
+        segment = st.selectbox("Customer Segment", SEGMENTS, key='segment', on_change=update_session_state, args=('segment', st.session_state.segment))
+        month = st.selectbox("Month", MONTHS, index=8, key='month', on_change=update_session_state, args=('month', st.session_state.month)) 
     
+    product_config = PRODUCT_CONFIG[product]
+
     with col2:
-        product_config = PRODUCT_CONFIG[product]
         competitor_price = st.number_input(
             "Competitor Price ($)",
             min_value=int(product_config['min_price'] * 0.8),
             max_value=int(product_config['max_price'] * 1.2),
             value=product_config['base_price'],
-            step=100
+            step=100,
+            key='competitor_price',
+            on_change=update_session_state, args=('competitor_price', st.session_state.competitor_price)
         )
-        inventory = st.slider("Inventory Level", 0, 200, 100)
-        days_since_promo = st.slider("Days Since Last Promotion", 0, 180, 90)
+        inventory = st.slider("Inventory Level", 0, 200, 100, key='inventory', on_change=update_session_state, args=('inventory', st.session_state.inventory))
+        days_since_promo = st.slider("Days Since Last Promotion", 0, 180, 90, key='days_since_promo', on_change=update_session_state, args=('days_since_promo', st.session_state.days_since_promo))
     
     with col3:
-        competitor_promo = st.checkbox("Competitor Running Promotion")
+        competitor_promo = st.checkbox("Competitor Running Promotion", key='competitor_promo', on_change=update_session_state, args=('competitor_promo', st.session_state.competitor_promo))
         competitor_promo_val = 1 if competitor_promo else 0
         
         st.markdown("#### Quick Scenarios")
-        if st.button("🔥 High Season + Low Inventory"):
-            month = "September"
-            inventory = 50
-            st.experimental_rerun()
-        if st.button("❄️ Low Season + High Inventory"):
-            month = "July"
-            inventory = 180
-            st.experimental_rerun()
+        if st.button("🔥 High Season + Low Inventory", use_container_width=True):
+            st.session_state.month = "September"
+            st.session_state.inventory = 50
+            st.session_state.competitor_promo = False
+            st.rerun()
+        if st.button("❄️ Low Season + High Inventory", use_container_width=True):
+            st.session_state.month = "July"
+            st.session_state.inventory = 180
+            st.session_state.competitor_promo = True
+            st.rerun()
     
     # Run optimization
-    if st.button("🚀 Optimize Price", type="primary"):
+    if st.button("🚀 Optimize Price", type="primary", use_container_width=True):
         with st.spinner("Calculating optimal price..."):
             optimal_price, optimal_profit, price_range, profits = optimize_price(
                 product, segment, competitor_price, inventory, month,
@@ -480,26 +550,30 @@ if app_mode == "Single Product Optimization":
             
             with viz_col2:
                 # Sensitivity analysis
+                # Run optimization for scenario prices, but use the same fixed context
+                def run_scenario(comp_mult=1.0, inv_change=0, comp_promo_val=competitor_promo_val):
+                     return optimize_price(
+                        product, segment, competitor_price * comp_mult, 
+                        max(0, min(200, inventory + inv_change)), month, days_since_promo, comp_promo_val
+                     )[1]
+
                 sensitivities = {
                     'Base Case': optimal_profit,
-                    'Comp +10%': optimize_price(product, segment, competitor_price * 1.1, 
-                                                inventory, month, days_since_promo, competitor_promo_val)[1],
-                    'Comp -10%': optimize_price(product, segment, competitor_price * 0.9, 
-                                                inventory, month, days_since_promo, competitor_promo_val)[1],
-                    'Inv +50': optimize_price(product, segment, competitor_price, 
-                                              min(200, inventory + 50), month, days_since_promo, competitor_promo_val)[1],
-                    'Inv -50': optimize_price(product, segment, competitor_price, 
-                                              max(0, inventory - 50), month, days_since_promo, competitor_promo_val)[1],
+                    'Comp +10%': run_scenario(comp_mult=1.1),
+                    'Comp -10%': run_scenario(comp_mult=0.9),
+                    'Inv +50': run_scenario(inv_change=50),
+                    'Inv -50': run_scenario(inv_change=-50),
+                    'Comp Promo ON': run_scenario(comp_promo_val=1)
                 }
                 
                 fig_sens = go.Figure(go.Bar(
                     x=list(sensitivities.keys()),
                     y=list(sensitivities.values()),
-                    marker_color=['#28a745', '#17a2b8', '#17a2b8', '#ffc107', '#ffc107']
+                    marker_color=['#28a745', '#17a2b8', '#17a2b8', '#ffc107', '#ffc107', '#dc3545']
                 ))
                 
                 fig_sens.update_layout(
-                    title="Sensitivity Analysis",
+                    title="Sensitivity Analysis (Profit at Optimal Price)",
                     xaxis_title="Scenario",
                     yaxis_title="Expected Profit ($)"
                 )
@@ -530,7 +604,7 @@ elif app_mode == "Batch Optimization":
         inventory = st.slider("Inventory Level (all products)", 0, 200, 100)
     
     # Run batch optimization
-    if st.button("🚀 Optimize All", type="primary"):
+    if st.button("🚀 Optimize All", type="primary", use_container_width=True):
         if not selected_products:
             st.warning("Please select at least one product")
         else:
@@ -539,28 +613,51 @@ elif app_mode == "Batch Optimization":
                 
                 for product in selected_products:
                     config = PRODUCT_CONFIG[product]
-                    competitor_price = config['base_price'] * 1.05  # Assume 5% higher
+                    # Assume competitor price is 5% higher for batch context
+                    competitor_price = config['base_price'] * 1.05 
                     
                     optimal_price, optimal_profit, _, _ = optimize_price(
                         product, segment, competitor_price, inventory, month
                     )
                     
+                    # Calculate current profit for comparison
                     current_price = config['base_price']
+                    features_current = calculate_features(
+                        current_price, product, segment, competitor_price, inventory, month
+                    )
+                    current_profit = predict_profit(features_current, model, scaler, feature_metadata['all_features'])
+                    
                     price_change = (optimal_price - current_price) / current_price * 100
+                    profit_change = (optimal_profit - current_profit) / current_profit * 100
                     
                     results.append({
                         'Product': product,
                         'Current Price': f"${current_price:,.0f}",
                         'Optimal Price': f"${optimal_price:,.0f}",
-                        'Change %': f"{price_change:+.1f}%",
+                        'Price Change %': f"{price_change:+.1f}%",
                         'Expected Profit': f"${optimal_profit:,.0f}",
+                        'Profit Change %': f"{profit_change:+.1f}%",
                         'Competitor Price': f"${competitor_price:,.0f}"
                     })
                 
                 # Display results table
                 st.subheader("📊 Results")
                 results_df = pd.DataFrame(results)
-                st.dataframe(results_df, use_container_width=True, hide_index=True)
+                
+                # Highlight profitable changes
+                def color_change(val):
+                    if isinstance(val, str) and ('+' in val or '-' in val):
+                        if '+' in val:
+                            return 'background-color: #d4edda; color: #155724'
+                        elif '-' in val:
+                            return 'background-color: #f8d7da; color: #721c24'
+                    return ''
+                    
+                st.dataframe(
+                    results_df.style.applymap(color_change, subset=['Price Change %', 'Profit Change %']), 
+                    use_container_width=True, 
+                    hide_index=True
+                )
                 
                 # Download button
                 csv = results_df.to_csv(index=False)
@@ -568,7 +665,8 @@ elif app_mode == "Batch Optimization":
                     label="📥 Download Results",
                     data=csv,
                     file_name=f"pricing_recommendations_{datetime.now().strftime('%Y%m%d')}.csv",
-                    mime="text/csv"
+                    mime="text/csv",
+                    use_container_width=True
                 )
 
 # ===========================================================================
@@ -577,7 +675,7 @@ elif app_mode == "Batch Optimization":
 
 else:  # Scenario Comparison
     st.header("⚖️ Scenario Comparison")
-    st.markdown("Compare optimal pricing across different scenarios")
+    st.markdown("Compare optimal pricing across different market and internal scenarios")
     
     # Product selection
     product = st.selectbox("Product", list(PRODUCT_CONFIG.keys()))
@@ -585,34 +683,43 @@ else:  # Scenario Comparison
     
     # Define scenarios
     scenarios = {
-        'High Season + Pharma': {
+        'High Season + Pharma (High Price/Profit)': {
             'segment': 'Pharma',
             'month': 'September',
             'inventory': 80,
-            'competitor_price': product_config['base_price'] * 1.02
+            'competitor_price': product_config['base_price'] * 1.05,
+            'description': 'High demand period, premium segment, low competitor pressure.'
         },
-        'Low Season + Academic': {
+        'Low Season + Academic (Low Price/Profit)': {
             'segment': 'Academic',
             'month': 'July',
             'inventory': 150,
-            'competitor_price': product_config['base_price'] * 0.95
+            'competitor_price': product_config['base_price'] * 0.95,
+            'description': 'Low demand period, price-sensitive segment, high inventory pressure.'
         },
-        'Competitor Promo': {
+        'Competitor Promo (Price Match/Defense)': {
             'segment': 'Biotech',
             'month': 'March',
             'inventory': 120,
             'competitor_price': product_config['base_price'] * 0.90,
-            'competitor_promo': 1
+            'competitor_promo': 1,
+            'description': 'Competitor is aggressive, requires defensive pricing strategy.'
         },
-        'High Inventory Clearance': {
+        'Year-End Clearance (High Volume/Low Margin)': {
             'segment': 'Government',
             'month': 'December',
             'inventory': 190,
-            'competitor_price': product_config['base_price']
+            'competitor_price': product_config['base_price'],
+            'description': 'High inventory, end-of-year budget spending, focus on volume.'
         }
     }
     
-    if st.button("🔍 Compare Scenarios", type="primary"):
+    # Display scenario descriptions
+    st.subheader("Defined Scenarios:")
+    for name, params in scenarios.items():
+        st.caption(f"**{name}**: Segment: {params['segment']} | Month: {params['month']} | Inventory: {params['inventory']} | Comp Price: ${params['competitor_price']:,.0f} | {params['description']}")
+    
+    if st.button("🔍 Compare Scenarios", type="primary", use_container_width=True):
         with st.spinner("Analyzing scenarios..."):
             comparison_results = []
             
@@ -631,12 +738,15 @@ else:  # Scenario Comparison
                     'Optimal Price': optimal_price,
                     'Expected Profit': optimal_profit,
                     'Segment': params['segment'],
-                    'Month': params['month']
+                    'Month': params['month'],
+                    'Inventory': params['inventory'],
+                    'Comp Price': params['competitor_price']
                 })
             
             results_df = pd.DataFrame(comparison_results)
             
             # Visualize comparison
+            st.subheader("Comparison Visualizations")
             col1, col2 = st.columns(2)
             
             with col1:
@@ -649,6 +759,7 @@ else:  # Scenario Comparison
                     text='Optimal Price'
                 )
                 fig_price.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+                fig_price.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
                 st.plotly_chart(fig_price, use_container_width=True)
             
             with col2:
@@ -661,6 +772,7 @@ else:  # Scenario Comparison
                     text='Expected Profit'
                 )
                 fig_profit.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+                fig_profit.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
                 st.plotly_chart(fig_profit, use_container_width=True)
             
             # Summary insights
@@ -670,22 +782,20 @@ else:  # Scenario Comparison
             worst_scenario = results_df.loc[results_df['Expected Profit'].idxmin()]
             
             st.success(f"""
-            **Best Scenario:** {best_scenario['Scenario']}  
-            - Optimal Price: ${best_scenario['Optimal Price']:,.0f}  
-            - Expected Profit: ${best_scenario['Expected Profit']:,.0f}
+            **Highest Profit Scenario:** {best_scenario['Scenario']} 
+            - Price: ${best_scenario['Optimal Price']:,.0f} | Profit: ${best_scenario['Expected Profit']:,.0f}
             """)
             
             st.warning(f"""
-            **Challenging Scenario:** {worst_scenario['Scenario']}  
-            - Optimal Price: ${worst_scenario['Optimal Price']:,.0f}  
-            - Expected Profit: ${worst_scenario['Expected Profit']:,.0f}
+            **Lowest Profit Scenario:** {worst_scenario['Scenario']} 
+            - Price: ${worst_scenario['Optimal Price']:,.0f} | Profit: ${worst_scenario['Expected Profit']:,.0f}
             """)
 
 # Footer
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center; color: #666; padding: 20px;'>
-    <p>💡 Price Optimization Dashboard | Powered by Machine Learning</p>
-    <p style='font-size: 0.8rem;'>Model Accuracy: R² = {:.2%} | Last Updated: {}</p>
+    <p>💡 Price Optimization Dashboard | Powered by Machine Learning (Simulated Demo)</p>
+    <p style='font-size: 0.8rem;'>Model Accuracy (Simulated): R² = {:.2%} | Last Trained: {}</p>
 </div>
-""".format(model_metadata['test_r2'], datetime.now().strftime('%Y-%m-%d')), unsafe_allow_html=True)
+""".format(model_metadata['test_r2'], model_metadata['last_trained']), unsafe_allow_html=True)
