@@ -48,13 +48,11 @@ streamlit run app.py
 Then open the URL shown in the terminal (typically `http://localhost:8501`) and explore the three modes from the sidebar.
 
 ### Developing & Re-training
-
-1. Run `Data-Generator.py` to produce synthetic datasets for experimenting with new features or models.
-2. Use the Jupyter notebooks for step-by-step analysis and training workflows:
+1. Use the Jupyter notebooks for step-by-step analysis and training workflows:
    - `EDA.ipynb` — exploratory data analysis
    - `Feature-Engineering.ipynb` — feature engineering experiments
    - `Modelling.ipynb` — model development and evaluation
-3. When a real model is ready, export it as a `.pkl` (along with the scaler), then update `app.py` to load them in place of the mocks.
+2. When a real model is ready, export it as a `.pkl` (along with the scaler), then update `app.py` to load them in place of the mocks.
 
 ---
 
