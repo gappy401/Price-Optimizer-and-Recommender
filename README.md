@@ -60,18 +60,25 @@ Then open the URL shown in the terminal (typically `http://localhost:8501`) and 
 
 ## Repository Structure
 ```
-app.py                              # Streamlit dashboard (entry point)
-Data-Generator.py                   # Synthetic lab-equipment pricing data generator
-EDA.ipynb                           # Exploratory Data Analysis
-Feature-Engineering.ipynb           # Feature engineering experiments
-Modelling.ipynb                     # Model development and evaluation
-requirements.txt                    # Python dependencies
-model_metadata.json                 # Metadata template used by the app
-feature_metadata.json               # Feature order template used by the app
-lab_equipment_pricing.csv           # Sample dataset
-lab_equipment_pricing_features.csv  # Feature-engineered sample data
-price_optimization_model.pkl        # (placeholder) trained model
-feature_scaler*.pkl                 # (placeholders) scaling objects
+app.py                               # Streamlit dashboard (entry point)
+requirements.txt                     # Python dependencies
+
+# raw and processed data samples
+lab_equipment_pricing.csv            # sample pricing dataset used in notebooks
+
+# metadata files used by the app and preprocessing
+Model/model_metadata.json            # metadata template consumed by `app.py`
+"Feature Engineering"/feature_metadata.json  # feature order template for preprocessing
+
+# project subfolders with supporting notebooks and artifacts
+"Feature Engineering"/              # feature engineering experiments & outputs
+   EDA.ipynb                        # exploratory data analysis notebook
+   Feature-Engineering.ipynb        # feature creation and transformation steps
+   lab_equipment_pricing_features.csv  # feature‑engineered sample data
+
+Model/                                # model development and evaluation
+   Modelling.ipynb                   # model training notebook
+   (placeholders)                   # trained model (`.pkl`) and scaler files live here in practice
 ```
 
 ---
