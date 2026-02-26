@@ -1,5 +1,7 @@
 # Price Optimizer & Recommender
 
+**Showcasing Skills:** Python programming (pandas, scikit-learn, Streamlit), data engineering, feature engineering, exploratory data analysis, machine learning modeling, statistical analysis, dashboard/UI development, simulation logic, and clean documentation. These overlap with the core requirements for pricing analytics roles—building data‑driven guidelines, performing ad‑hoc modeling, preparing executive summaries, and supporting cross‑functional pricing decisions. This project is designed to give recruiters a quick glance at the end‑to‑end workflow typically expected of a data scientist / ML engineer.
+
 A proof-of-concept **Price Optimization Dashboard** for laboratory equipment, demonstrating how machine learning can recommend optimal selling prices to maximize profit — factoring in product type, customer segment, market conditions, competitive dynamics, and seasonality.
 
 > **Note:** This is a demo built on mock models and synthetic data. The simulated prediction logic lives alongside the Streamlit frontend in `app.py`. Replacing the mock functions with a trained ML model and preprocessor pipeline is all that's needed to move to production.
