@@ -492,21 +492,16 @@ if app_mode == "Single Product Optimization":
             
             # Recommendation box
             st.markdown(f"""
-            <div class="recommendation-box">
-                <h3>💡 Recommendation</h3>
-                <p><strong>Action:</strong> {"Increase" if optimal_price > current_price else "Decrease"} 
-                price from ${current_price:,.0f} to ${optimal_price:,.0f} 
-                ({abs(price_change_pct):.1f}% {"increase" if optimal_price > current_price else "decrease"})</p>
-                
-                <p><strong>Expected Impact:</strong> Profit will {"increase" if optimal_profit > current_profit else "decrease"} 
-                by ${abs(optimal_profit - current_profit):,.0f} ({abs(profit_change_pct):.1f}%)</p>
-                
-                <p><strong>vs Competitor:</strong> Your optimal price is 
-                {abs((optimal_price - competitor_price) / competitor_price * 100):.1f}% 
-                {"higher" if optimal_price > competitor_price else "lower"} than competitor 
-                (${competitor_price:,.0f})</p>
-            </div>
-            """, unsafe_allow_html=True)
+    <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #0068c9;">
+        <h3 style="margin-top: 0;">💡 Recommendation</h3>
+        
+        Action: {"Increase" if optimal_price > current_price else "Decrease"} price from ${current_price:,.0f} to ${optimal_price:,.0f} ({abs(price_change_pct):.1f}% {"increase" if optimal_price > current_price else "decrease"})
+        
+        Expected Impact: Profit will {"increase" if optimal_profit > current_profit else "decrease"} by ${abs(optimal_profit - current_profit):,.0f} ({abs(profit_change_pct):.1f}%)
+        
+        vs Competitor: Your optimal price is {abs((optimal_price - competitor_price) / competitor_price * 100):.1f}% {"higher" if optimal_price > competitor_price else "lower"} than competitor (${competitor_price:,.0f})
+    </div>
+""", unsafe_allow_html=True)
             
             # Visualizations
             viz_col1, viz_col2 = st.columns(2)
