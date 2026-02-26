@@ -1,6 +1,6 @@
 # Price Optimization Dashboard — Laboratory Equipment
 
-An end-to-end pricing analytics application that models optimal sell-price recommendations for laboratory equipment across diverse customer segments, market conditions, and competitive landscapes. The project covers the full workflow: raw data generation, exploratory analysis, feature engineering, model development, and an interactive decision-support dashboard — designed to mirror the kind of data-driven pricing infrastructure used to build and maintain pricing guidelines at scale.
+An end-to-end pricing analytics application that models optimal sell-price recommendations for laboratory equipment across diverse customer segments, market conditions, and competitive landscapes. The project covers the full workflow: raw data generation, exploratory analysis, feature engineering, model development, and an interactive decision-support dashboard, simulating data-driven pricing infrastructure used to build and maintain pricing guidelines at scale.
 
 > **Note:** Built on mock models and synthetic data. The simulated prediction logic lives alongside the Streamlit frontend in `app.py`. Replacing the mock functions with a trained ML model and preprocessor pipeline is all that's needed to move to production.
 
@@ -58,7 +58,7 @@ Pricing decisions in scientific equipment markets are rarely straightforward. Li
 
 ### Prerequisites
 
-- Python 3.10+ (the dev container runs Ubuntu 24.04 with Python 3.12)
+- Python 3.10+ 
 ```bash
 pip install -r requirements.txt
 ```
@@ -68,7 +68,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Then open the URL shown in the terminal (typically `http://localhost:8501`) and explore the three modes from the sidebar.
+Then open the URL shown in the terminal.
 
 ### Developing & Re-training
 1. Use the Jupyter notebooks for step-by-step analysis and training workflows:
