@@ -1,71 +1,77 @@
-# Price Optimizer and Recommender
+# Price Optimizer & Recommender
 
-This repository contains a proof-of-concept **Price Optimization Dashboard** for laboratory equipment. The goal is to demonstrate how machine learning (or, in this demo, a simulated model) can be used to recommend optimal selling prices that maximize profit based on product, customer segment, market conditions, competitive dynamics, and seasonality.
+A proof-of-concept **Price Optimization Dashboard** for laboratory equipment, demonstrating how machine learning can recommend optimal selling prices to maximize profit — factoring in product type, customer segment, market conditions, competitive dynamics, and seasonality.
 
-> This is a demo app that uses mock models and synthetic data. The underlying file `app.py` contains both the Streamlit frontend and simulated feature engineering / prediction logic. The real implementation would replace the mock functions with a trained ML model and preprocessor pipelines.
+> **Note:** This is a demo built on mock models and synthetic data. The simulated prediction logic lives alongside the Streamlit frontend in `app.py`. Replacing the mock functions with a trained ML model and preprocessor pipeline is all that's needed to move to production.
+
+---
+
+## Dashboard Preview
+
+![Single Product Optimization](d1.png)
+![Batch Optimization & Scenario Comparison](d2.png)
 
 ---
 
 ## Features
 
-- **Interactive Streamlit app** (`app.py`) with three modes:
-  - **Single Product Optimization** – compute optimal price for a given scenario, visualize price-profit curve, and get actionable recommendations.
-  - **Batch Optimization** – run price optimization over multiple products simultaneously and download results as CSV.
-  - **Scenario Comparison** – compare optimal pricing outcomes across predefined market scenarios.
-- **Mocked prediction engine** that simulates profit using heuristics, allowing the dashboard to run without serialized model files.
-- **Feature engineering utilities** that mirror training-time preprocessing (features such as price ratios, season flags, encoded segments, etc.).
-- Utility notebooks for exploratory data analysis (`EDA.ipynb`), feature engineering experiments (`Feature-Engineering.ipynb`), and model development (`Modelling.ipynb`).
-- A simple `Data-Generator.py` script to fabricate synthetic lab equipment pricing datasets.
+**Three optimization modes** (accessible from the sidebar):
+
+- **Single Product Optimization** — compute the optimal price for a given scenario, visualize the price-profit curve, and receive actionable recommendations.
+- **Batch Optimization** — run price optimization across multiple products simultaneously and export results as a CSV.
+- **Scenario Comparison** — compare optimal pricing outcomes across predefined market scenarios side by side.
+
+**Under the hood:**
+- A mocked prediction engine that simulates profit using heuristics, so the dashboard runs without any serialized model files.
+- Feature engineering utilities mirroring training-time preprocessing (price ratios, season flags, encoded segments, etc.).
+- Jupyter notebooks for EDA, feature engineering experiments, and model development.
+- A synthetic data generator script to fabricate lab equipment pricing datasets.
 
 ---
 
-## How to use this repo
+## Getting Started
 
 ### Prerequisites
 
-- Python 3.10+ (the dev container is running Ubuntu 24.04 with Python 3.12).
-- Install dependencies listed in `requirements.txt`:
-
+- Python 3.10+ (the dev container runs Ubuntu 24.04 with Python 3.12)
 ```bash
 pip install -r requirements.txt
 ```
 
 ### Running the App
+```bash
+streamlit run app.py
+```
 
-1. Start the Streamlit server from the workspace root:
-
-   ```bash
-   streamlit run app.py
-   ```
-
-2. Open the URL shown in the terminal (usually `http://localhost:8501`) in your browser.
-
-3. Explore the three app modes from the sidebar.
+Then open the URL shown in the terminal (typically `http://localhost:8501`) and explore the three modes from the sidebar.
 
 ### Developing & Re-training
 
-- Use `Data-Generator.py` to produce synthetic datasets if you want to experiment with new features or models.
-- Open the Jupyter notebooks (`EDA.ipynb`, `Feature-Engineering.ipynb`, `Modelling.ipynb`) for step-by-step analysis and model training workflows.
-- When a real model is ready, export it as a `.pkl` along with the scaler and update `app.py` to load them instead of using the mocks.
+1. Run `Data-Generator.py` to produce synthetic datasets for experimenting with new features or models.
+2. Use the Jupyter notebooks for step-by-step analysis and training workflows:
+   - `EDA.ipynb` — exploratory data analysis
+   - `Feature-Engineering.ipynb` — feature engineering experiments
+   - `Modelling.ipynb` — model development and evaluation
+3. When a real model is ready, export it as a `.pkl` (along with the scaler), then update `app.py` to load them in place of the mocks.
 
 ---
 
 ## Repository Structure
-
 ```
-app.py                     # Streamlit dashboard (entry point)
-Data-Generator.py          # Script to generate synthetic lab-equipment pricing data
-EDA.ipynb                  # Exploratory Data Analysis notebook
-Feature-Engineering.ipynb  # Feature engineering experiments
-Modelling.ipynb            # Model development and evaluation notebook
-requirements.txt           # Python dependencies
-model_metadata.json        # Metadata template used in the app
-feature_metadata.json      # Feature order template used in the app
-lab_equipment_pricing.csv  # Sample dataset
-lab_equipment_pricing_features.csv  # Feature-engineered version of sample data
-price_optimization_model.pkl  # (placeholder) trained model file
-feature_scaler*.pkl        # (placeholders) scaling objects
+app.py                              # Streamlit dashboard (entry point)
+Data-Generator.py                   # Synthetic lab-equipment pricing data generator
+EDA.ipynb                           # Exploratory Data Analysis
+Feature-Engineering.ipynb           # Feature engineering experiments
+Modelling.ipynb                     # Model development and evaluation
+requirements.txt                    # Python dependencies
+model_metadata.json                 # Metadata template used by the app
+feature_metadata.json               # Feature order template used by the app
+lab_equipment_pricing.csv           # Sample dataset
+lab_equipment_pricing_features.csv  # Feature-engineered sample data
+price_optimization_model.pkl        # (placeholder) trained model
+feature_scaler*.pkl                 # (placeholders) scaling objects
 ```
 
+---
 
-For questions or enhancements, feel free to open issues or pull requests in the repository.
+For questions or improvements, feel free to open an issue or pull request.
