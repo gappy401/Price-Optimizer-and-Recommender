@@ -2,11 +2,11 @@
 
 This repository contains a proof-of-concept **Price Optimization Dashboard** for laboratory equipment. The goal is to demonstrate how machine learning (or, in this demo, a simulated model) can be used to recommend optimal selling prices that maximize profit based on product, customer segment, market conditions, competitive dynamics, and seasonality.
 
-> 💡 This is a demo app that uses mock models and synthetic data. The underlying file `app.py` contains both the Streamlit frontend and simulated feature engineering / prediction logic. The real implementation would replace the mock functions with a trained ML model and preprocessor pipelines.
+> This is a demo app that uses mock models and synthetic data. The underlying file `app.py` contains both the Streamlit frontend and simulated feature engineering / prediction logic. The real implementation would replace the mock functions with a trained ML model and preprocessor pipelines.
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Interactive Streamlit app** (`app.py`) with three modes:
   - **Single Product Optimization** – compute optimal price for a given scenario, visualize price-profit curve, and get actionable recommendations.
@@ -19,7 +19,7 @@ This repository contains a proof-of-concept **Price Optimization Dashboard** for
 
 ---
 
-## 🧠 Getting Started
+## How to use this repo
 
 ### Prerequisites
 
@@ -50,7 +50,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🗂️ Repository Structure
+## Repository Structure
 
 ```
 app.py                     # Streamlit dashboard (entry point)
@@ -67,20 +67,5 @@ price_optimization_model.pkl  # (placeholder) trained model file
 feature_scaler*.pkl        # (placeholders) scaling objects
 ```
 
----
-
-## 📝 Notes
-
-- The dashboard currently runs in **simulated mode**, warning users when model files are absent. Replace the mocks with a real model pipeline for production use.
-- The feature list and product configuration are hard-coded for demonstration; real applications should load these from a configuration store or database.
-- Profit optimization uses a simple grid search over a price range; more advanced techniques (convex optimization, gradient-based methods) can be integrated as needed.
-
----
-
-## 📄 License
-
-This project is provided for educational/demonstration purposes. No license is specified.
-
----
 
 For questions or enhancements, feel free to open issues or pull requests in the repository.
