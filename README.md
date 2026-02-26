@@ -1,10 +1,8 @@
-# Price Optimizer & Recommender
+# Price Optimization Dashboard — Laboratory Equipment
 
-**Showcasing Skills:** Python programming (pandas, scikit-learn, Streamlit), data engineering, feature engineering, exploratory data analysis, machine learning modeling, statistical analysis, dashboard/UI development, simulation logic, and clean documentation. These overlap with the core requirements for pricing analytics roles—building data‑driven guidelines, performing ad‑hoc modeling, preparing executive summaries, and supporting cross‑functional pricing decisions. This project is designed to give recruiters a quick glance at the end‑to‑end workflow typically expected of a data scientist / ML engineer.
+An end-to-end pricing analytics application that models optimal sell-price recommendations for laboratory equipment across diverse customer segments, market conditions, and competitive landscapes. The project covers the full workflow: raw data generation, exploratory analysis, feature engineering, model development, and an interactive decision-support dashboard — designed to mirror the kind of data-driven pricing infrastructure used to build and maintain pricing guidelines at scale.
 
-A proof-of-concept **Price Optimization Dashboard** for laboratory equipment, demonstrating how machine learning can recommend optimal selling prices to maximize profit — factoring in product type, customer segment, market conditions, competitive dynamics, and seasonality.
-
-> **Note:** This is a demo built on mock models and synthetic data. The simulated prediction logic lives alongside the Streamlit frontend in `app.py`. Replacing the mock functions with a trained ML model and preprocessor pipeline is all that's needed to move to production.
+> **Note:** Built on mock models and synthetic data. The simulated prediction logic lives alongside the Streamlit frontend in `app.py`. Replacing the mock functions with a trained ML model and preprocessor pipeline is all that's needed to move to production.
 
 ---
 
@@ -14,20 +12,43 @@ A proof-of-concept **Price Optimization Dashboard** for laboratory equipment, de
 
 ---
 
+## What It Does
+
+Pricing decisions in scientific equipment markets are rarely straightforward. List price, customer segment, competitive position, and seasonal demand all interact in ways that simple margin targets miss. This dashboard operationalizes those dynamics:
+
+- **Demand & margin modeling** — quantifies how price elasticity, segment sensitivity, and 
+ competitive index jointly drive profitability, providing a data-driven basis for pricing 
+  decisions rather than intuition.
+- **Scenario analysis** — enables side-by-side comparison of pricing outcomes across market 
+  conditions, supporting the kind of ad-hoc analysis that informs commercial and 
+  cross-functional pricing discussions.
+- **Batch optimization** — runs recommended price points across a product portfolio 
+  simultaneously, producing outputs ready for review or export to downstream reporting.
+- **Transparent feature logic** — every input variable (price ratio, seasonality flag, 
+  segment encoding, competitive positioning) is documented and reproducible, consistent with 
+  how pricing models are handed off to commercial teams.
+
+---
+
 ## Features
 
 **Three optimization modes** (accessible from the sidebar):
 
-- **Single Product Optimization** — compute the optimal price for a given scenario, visualize the price-profit curve, and receive actionable recommendations.
-- **Batch Optimization** — run price optimization across multiple products simultaneously and export results as a CSV.
-- **Scenario Comparison** — compare optimal pricing outcomes across predefined market scenarios side by side.
+- **Single Product Optimization** — compute the optimal price for a given scenario, 
+  visualize the price-profit curve, and receive actionable recommendations.
+- **Batch Optimization** — run price optimization across multiple products simultaneously 
+  and export results as CSV.
+- **Scenario Comparison** — compare optimal pricing outcomes across predefined market 
+  scenarios side by side.
 
 **Under the hood:**
-- A mocked prediction engine that simulates profit using heuristics, so the dashboard runs without any serialized model files.
-- Feature engineering utilities mirroring training-time preprocessing (price ratios, season flags, encoded segments, etc.).
-- Jupyter notebooks for EDA, feature engineering experiments, and model development.
-- A synthetic data generator script to fabricate lab equipment pricing datasets.
 
+- A mocked prediction engine that simulates profit using heuristics, so the dashboard runs 
+  without any serialized model files.
+- Feature engineering utilities mirroring training-time preprocessing (price ratios, season 
+  flags, encoded segments, etc.).
+- Jupyter notebooks covering EDA, feature engineering experiments, and model development.
+- A synthetic data generator to fabricate realistic lab equipment pricing datasets.
 
 ![Batch Optimization & Scenario Comparison](D2.jpg)
 
