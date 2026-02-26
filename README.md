@@ -8,8 +8,8 @@ A proof-of-concept **Price Optimization Dashboard** for laboratory equipment, de
 
 ## Dashboard Preview
 
-![Single Product Optimization](D1.png)
-![Batch Optimization & Scenario Comparison](D2.png)
+![Single Product Optimization](D1.jpg)
+![Batch Optimization & Scenario Comparison](D2.jpg)
 
 ---
 
