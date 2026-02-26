@@ -9,7 +9,6 @@ A proof-of-concept **Price Optimization Dashboard** for laboratory equipment, de
 ## Dashboard Preview
 
 ![Single Product Optimization](D1.jpg)
-![Batch Optimization & Scenario Comparison](D2.jpg)
 
 ---
 
@@ -26,6 +25,9 @@ A proof-of-concept **Price Optimization Dashboard** for laboratory equipment, de
 - Feature engineering utilities mirroring training-time preprocessing (price ratios, season flags, encoded segments, etc.).
 - Jupyter notebooks for EDA, feature engineering experiments, and model development.
 - A synthetic data generator script to fabricate lab equipment pricing datasets.
+
+
+![Batch Optimization & Scenario Comparison](D2.jpg)
 
 ---
 
